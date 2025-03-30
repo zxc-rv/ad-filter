@@ -12,20 +12,22 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Download and process domain list
       run: |
-        mkdir -p data  # Изменили Data на data
+        mkdir -p data
         echo "Downloading list..."
         curl -s https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp.txt
         echo "Filtering comments..."
         grep -v '^#' temp.txt > temp_filtered.txt
         echo "Adding domain prefix..."
-        sed 's/^/domain:/' temp_filtered.txt > data/hagezi-pro  # Изменили Data на data
+        sed 's/^/domain:/' temp_filtered.txt > data/hagezi-pro
         echo "Cleaning up..."
         rm temp.txt temp_filtered.txt
         echo "File contents:"
-        cat data/hagezi-pro || echo "File not created!"  # Изменили Data на data
+        cat data/hagezi-pro || echo "File not created!"
 
     - name: Set up Go
       uses: actions/setup-go@v5
@@ -36,12 +38,27 @@ jobs:
       run: go mod download
 
     - name: Run Go application
-      run: go run ./
+      run: |
+        go run ./
+        echo "Checking for custom.dat:"
+        ls -la custom.dat || echo "custom.dat not found in root"
 
     - name: Commit changes
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add data/hagezi-pro  # Изменили Data на data
-        git commit -m "Update hagezi-pro domains" || echo "No changes to commit"
+        git add data/hagezi-pro
+        git add custom.dat || echo "No custom.dat to add"
+        git commit -m "Update hagezi-pro domains and custom.dat" || echo "No changes to commit"
         git push
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: "daily-update-${{ github.run_id }}"
+        name: "Daily Update ${{ github.run_id }}"
+        files: custom.dat
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
