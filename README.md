@@ -25,11 +25,7 @@
 
 ### Для Xray
 Загрузите `adlist.dat` в нужную директорию и добавьте правило для него:
-> [!NOTE]
-> Можно добавить автоматизацию cron: 
-> ```
-> 3 5 * * * /opt/bin/curl -L -o /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat
-> ```
+
 ```json
 {
   "routing": {
@@ -42,6 +38,11 @@
   }
 }
 ```
+> [!NOTE]
+> При использовании XKeen на роутерах Keenetic можно добавить автоматизацию Cron:
+> ```
+> echo "3 5 * * * /opt/bin/curl -L -o /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat" >> /opt/var/spool/cron/crontabs/root
+> ```
 
 ### Для Sing-box
 Добавьте rule_set в конфигурацию Sing-Box и правило для него:
