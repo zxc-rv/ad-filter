@@ -35,13 +35,16 @@ jobs:
         curl -s https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp_domains.txt
         echo "Filtering comments..."
         grep -v '^#' temp_domains.txt > filtered_domains.txt
-        echo "Checking filtered domains (first 5 lines):"
+        echo "Checking filtered domains (first 5 lines and count):"
         head -n 5 filtered_domains.txt || echo "No domains filtered!"
+        echo "Total lines in filtered_domains.txt:"
+        wc -l filtered_domains.txt
         echo "Creating adlist.json with domains..."
-        jq -n --argjson domains "$(jq -R -s -c 'split("\n") | map(select(length > 0))' filtered_domains.txt)" \
-          '{"version": 2, "rules": [{"domain_suffix": $domains}]}' > adlist.json
+        jq -R -s -c 'split("\n") | map(select(length > 0))' filtered_domains.txt > domains_array.json
+        jq -n --slurpfile domains domains_array.json \
+          '{"version": 2, "rules": [{"domain_suffix": $domains[0]}]}' > adlist.json
         echo "Cleaning up..."
-        rm temp_domains.txt filtered_domains.txt
+        rm temp_domains.txt filtered_domains.txt domains_array.json
         echo "adlist.json contents (first 1000 chars):"
         head -c 1000 adlist.json || echo "adlist.json not created!"
 
