@@ -15,10 +15,10 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Download and process domain list
+    - name: Download and process domain list for hagezi-pro
       run: |
         mkdir -p data
-        echo "Downloading list..."
+        echo "Downloading list for hagezi-pro..."
         curl -s https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp.txt
         echo "Filtering comments..."
         grep -v '^#' temp.txt > temp_filtered.txt
@@ -26,8 +26,24 @@ jobs:
         sed 's/^/domain:/' temp_filtered.txt > data/hagezi-pro
         echo "Cleaning up..."
         rm temp.txt temp_filtered.txt
-        echo "File contents:"
+        echo "hagezi-pro contents:"
         cat data/hagezi-pro || echo "File not created!"
+
+    - name: Download and process domain list for adlist.json
+      run: |
+        echo "Downloading list for adlist.json..."
+        curl -s https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp_domains.txt
+        echo "Filtering comments..."
+        grep -v '^#' temp_domains.txt > filtered_domains.txt
+        echo "Creating adlist.json..."
+        echo '{"version": 2, "rules": [{"domain_suffix": []}]}' > adlist.json
+        echo "Adding domains to adlist.json..."
+        jq --argjson domains "$(jq -R -s -c 'split("\n") | map(select(length > 0))' filtered_domains.txt)" \
+          '.rules[0].domain_suffix = $domains' adlist.json > temp_adlist.json && mv temp_adlist.json adlist.json
+        echo "Cleaning up..."
+        rm temp_domains.txt filtered_domains.txt
+        echo "adlist.json contents:"
+        cat adlist.json || echo "adlist.json not created!"
 
     - name: Set up Go
       uses: actions/setup-go@v5
@@ -43,12 +59,23 @@ jobs:
         echo "Checking for adlist.dat in root:"
         ls -la adlist.dat || echo "adlist.dat not found in root"
 
+    - name: Install sing-box and compile rule-set
+      run: |
+        echo "Installing sing-box..."
+        bash <(curl -fsSL https://sing-box.app/deb-install.sh)
+        echo "Compiling adlist.json to adlist.srs..."
+        sing-box rule-set compile adlist.json
+        echo "Checking for adlist.srs:"
+        ls -la adlist.srs || echo "adlist.srs not created!"
+
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: "daily-update-${{ github.run_id }}"
         name: "Daily Update ${{ github.run_id }}"
-        files: adlist.dat
+        files: |
+          adlist.dat
+          adlist.srs
         draft: false
         prerelease: false
       env:
