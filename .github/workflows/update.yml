@@ -15,17 +15,17 @@ jobs:
 
     - name: Download and process domain list
       run: |
-        mkdir -p Data
+        mkdir -p data  # Изменили Data на data
         echo "Downloading list..."
         curl -s https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp.txt
         echo "Filtering comments..."
         grep -v '^#' temp.txt > temp_filtered.txt
         echo "Adding domain prefix..."
-        sed 's/^/domain:/' temp_filtered.txt > Data/hagezi-pro
+        sed 's/^/domain:/' temp_filtered.txt > data/hagezi-pro  # Изменили Data на data
         echo "Cleaning up..."
         rm temp.txt temp_filtered.txt
         echo "File contents:"
-        cat Data/hagezi-pro || echo "File not created!"
+        cat data/hagezi-pro || echo "File not created!"  # Изменили Data на data
 
     - name: Set up Go
       uses: actions/setup-go@v5
@@ -42,6 +42,6 @@ jobs:
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add Data/hagezi-pro
+        git add data/hagezi-pro  # Изменили Data на data
         git commit -m "Update hagezi-pro domains" || echo "No changes to commit"
         git push
