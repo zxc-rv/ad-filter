@@ -40,16 +40,16 @@ jobs:
     - name: Run Go application
       run: |
         go run ./
-        echo "Checking for custom.dat:"
-        ls -la custom.dat || echo "custom.dat not found in root"
+        echo "Checking for adlist.dat:"
+        ls -la adlist.dat || echo "adlist.dat not found in root"
 
     - name: Commit changes
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git add data/hagezi-pro
-        git add custom.dat || echo "No custom.dat to add"
-        git commit -m "Update hagezi-pro domains and custom.dat" || echo "No changes to commit"
+        git add adlist.dat || echo "No adlist.dat to add"
+        git commit -m "Update hagezi-pro domains and adlist.dat" || echo "No changes to commit"
         git push
 
     - name: Create Release
@@ -57,7 +57,7 @@ jobs:
       with:
         tag_name: "daily-update-${{ github.run_id }}"
         name: "Daily Update ${{ github.run_id }}"
-        files: custom.dat
+        files: adlist.dat
         draft: false
         prerelease: false
       env:
