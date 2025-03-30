@@ -1,4 +1,4 @@
-name: Update Hagezi Pro Domains
+name: Update domain list
 
 on:
   schedule:
