@@ -23,7 +23,7 @@
 
 ## Примеры конфигураций:
 
-### Для Xray
+### Для Xray (c версии 1.8.7)
 Загрузите `adlist.dat` в нужную директорию и добавьте правило для него:
 
 ```json
@@ -48,7 +48,7 @@
 > echo "3 5 * * * /opt/bin/curl -L -o /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat && xkeen -restart" >> /opt/var/spool/cron/crontabs/root
 > ```
 
-### Для Sing-box
+### Для Sing-box (с версии 1.11.0)
 Добавьте rule_set в конфигурацию Sing-Box и правило для него:
 
 ```json
