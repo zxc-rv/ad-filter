@@ -1,4 +1,4 @@
-name: Update domain list
+name: Обновить списки
 
 on:
   schedule:
