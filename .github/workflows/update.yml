@@ -1,0 +1,40 @@
+name: Update Hagezi Pro Domains
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Запуск каждый день в полночь UTC
+  workflow_dispatch:     # Возможность запустить вручную
+
+jobs:
+  update-domains:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Download and process domain list
+      run: |
+        mkdir -p Data
+        curl -s https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt | \
+        grep -v '^#' | \
+        sed 's/^/domain:/' > Data/hagezi-pro
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: 'stable'
+
+    - name: Download Go dependencies
+      run: go mod download
+
+    - name: Run Go application
+      run: go run ./
+
+    - name: Commit changes
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add Data/hagezi-pro
+        git commit -m "Update hagezi-pro domains" || echo "No changes to commit"
+        git push
