@@ -87,8 +87,8 @@ jobs:
     - name: Создаем релиз
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: "daily-update-${{ github.run_id }}"
-        name: "Ежедневное обновление ${{ github.run_id }}"
+        tag_name: "daily-update-$(date +%d-%m-%Y)"
+        name: "Ежедневное обновление $(date +%d-%m-%Y)"
         files: |
           adlist.dat
           adlist.srs
