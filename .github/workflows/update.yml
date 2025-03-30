@@ -2,7 +2,7 @@ name: Обновить списки
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Запуск каждый день в полночь UTC
+    - cron: '0 1 * * *'  # Запуск каждый день в полночь UTC
   workflow_dispatch:     # Возможность запустить вручную
 
 jobs:
@@ -10,36 +10,36 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout repository
+    - name: Чекаем репо
       uses: actions/checkout@v4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Download and process domain list for hagezi-pro
+    - name: Скачиваем и обрабатываем список доменов для adlist.dat
       run: |
         mkdir -p data
-        echo "Downloading list for hagezi-pro..."
+        echo "Скачиваем актуальный список Hagezi Pro..."
         curl -s https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp.txt
-        echo "Filtering comments..."
+        echo "Чистим комментарии..."
         grep -v '^#' temp.txt > temp_filtered.txt
-        echo "Adding domain prefix..."
+        echo "Добавляем префикс "domain:"..."
         sed 's/^/domain:/' temp_filtered.txt > data/hagezi-pro
-        echo "Cleaning up..."
+        echo "Очистка..."
         rm temp.txt temp_filtered.txt
         echo "hagezi-pro contents (first 5 lines):"
-        head -n 5 data/hagezi-pro || echo "File not created!"
+        head -n 5 data/hagezi-pro || echo "Файл не создан!"
 
-    - name: Download and process domain list for adlist.json
+    - name: Скачиваем и обрататываем список доменов для adlist.json
       run: |
-        echo "Downloading list for adlist.json..."
+        echo "Скачиваем список для adlist.json..."
         curl -s https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp_domains.txt
-        echo "Filtering comments..."
+        echo "Чистим комментарии..."
         grep -v '^#' temp_domains.txt > filtered_domains.txt
-        echo "Checking filtered domains (first 5 lines and count):"
-        head -n 5 filtered_domains.txt || echo "No domains filtered!"
-        echo "Total lines in filtered_domains.txt:"
+        echo "Проверяем отфильтрованные домены:"
+        head -n 5 filtered_domains.txt || echo "Нет отфильтрованных доменов!"
+        echo "Кол-во строк в filtered_domains.txt:"
         wc -l filtered_domains.txt
-        echo "Creating adlist.json with initial content..."
+        echo "Создаем adlist.json..."
         cat << EOF > adlist.json
         {
             "version": 2,
@@ -50,42 +50,45 @@ jobs:
             ]
         }
         EOF
-        echo "Adding domains to adlist.json..."
+        echo "Добавляем домены в adlist.json..."
         jq --slurpfile domains <(jq -R -s -c 'split("\n") | map(select(length > 0))' filtered_domains.txt) \
           '.rules[0].domain_suffix = $domains[0]' adlist.json > temp_adlist.json && mv temp_adlist.json adlist.json
-        echo "Cleaning up..."
+        echo "Очистка..."
         rm temp_domains.txt filtered_domains.txt
-        echo "adlist.json contents (first 1000 chars):"
-        head -c 1000 adlist.json || echo "adlist.json not created!"
+        echo "adlist.json содержит (первые 1000 символов):"
+        head -c 1000 adlist.json || echo "adlist.json не создан!"
 
-    - name: Set up Go
+    - name: Устанавливаем GO
       uses: actions/setup-go@v5
       with:
         go-version: 'stable'
 
-    - name: Download Go dependencies
+    - name: Загружаем зависимости GO
       run: go mod download
 
-    - name: Run Go application
+    - name: Компилируем adlist.dat
       run: |
         go run ./
-        echo "Checking for adlist.dat in root:"
-        ls -la adlist.dat || echo "adlist.dat not found in root"
+        echo "Ищем adlist.dat в root:"
+        ls -la adlist.dat || echo "adlist.dat не найден в root"
 
-    - name: Install sing-box and compile rule-set
+    - name: Устанавливаем Sing-Box
       run: |
-        echo "Installing sing-box..."
+        echo "Установка Sing-Box..."
         bash <(curl -fsSL https://sing-box.app/deb-install.sh)
-        echo "Compiling adlist.json to adlist.srs..."
+        
+    - name: Компилируем adlist.srs
+      run: |
+        echo "Компилируем adlist.json в adlist.srs..."
         sing-box rule-set compile adlist.json
-        echo "Checking adlist.srs size:"
-        ls -lh adlist.srs || echo "adlist.srs not created!"
-
-    - name: Create Release
+        echo "Проверяем размер adlist.srs :"
+        ls -lh adlist.srs || echo "adlist.srs не создан!"
+        
+    - name: Создаем релиз
       uses: softprops/action-gh-release@v1
       with:
         tag_name: "daily-update-${{ github.run_id }}"
-        name: "Daily Update ${{ github.run_id }}"
+        name: "Ежедневное обновление ${{ github.run_id }}"
         files: |
           adlist.dat
           adlist.srs
