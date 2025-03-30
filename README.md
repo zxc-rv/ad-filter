@@ -25,7 +25,11 @@
 
 ### Для Xray
 Загрузите `adlist.dat` в нужную директорию и добавьте правило для него:
-
+> [!NOTE]
+> Можно добавить автоматизацию cron: 
+> ```
+> 3 5 * * * /opt/bin/curl -L -o /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat
+> ```
 ```json
 {
   "routing": {
