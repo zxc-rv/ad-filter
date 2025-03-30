@@ -22,7 +22,7 @@ jobs:
         curl -s https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp.txt
         echo "Чистим комментарии..."
         grep -v '^#' temp.txt > temp_filtered.txt
-        echo "Добавляем префикс "domain:"..."
+        echo "Добавляем префикс domain..."
         sed 's/^/domain:/' temp_filtered.txt > data/hagezi-pro
         echo "Очистка..."
         rm temp.txt temp_filtered.txt
