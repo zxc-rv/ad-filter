@@ -16,9 +16,16 @@ jobs:
     - name: Download and process domain list
       run: |
         mkdir -p Data
-        curl -s https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt | \
-        grep -v '^#' | \
-        sed 's/^/domain:/' > Data/hagezi-pro
+        echo "Downloading list..."
+        curl -s https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp.txt
+        echo "Filtering comments..."
+        grep -v '^#' temp.txt > temp_filtered.txt
+        echo "Adding domain prefix..."
+        sed 's/^/domain:/' temp_filtered.txt > Data/hagezi-pro
+        echo "Cleaning up..."
+        rm temp.txt temp_filtered.txt
+        echo "File contents:"
+        cat Data/hagezi-pro || echo "File not created!"
 
     - name: Set up Go
       uses: actions/setup-go@v5
