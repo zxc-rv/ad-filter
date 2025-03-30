@@ -84,7 +84,7 @@ jobs:
         echo "Проверяем размер adlist.srs :"
         ls -lh adlist.srs || echo "adlist.srs не создан!"
 
-    - name: Set release date
+    - name: Ставим дату релиза
       id: set-date
       run: echo "RELEASE_DATE=$(date +%d-%m-%Y)" >> $GITHUB_ENV
         
