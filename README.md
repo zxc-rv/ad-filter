@@ -32,7 +32,7 @@
     "rules": [
       {
         "domain": "ext:adlist.dat:hagezi-pro",
-        "outboundTag": "reject"
+        "outboundTag": "block"
       }
     ]
   }
