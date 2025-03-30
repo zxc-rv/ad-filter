@@ -40,7 +40,7 @@ jobs:
     - name: Run Go application
       run: |
         go run ./
-        echo "Checking for adlist.dat:"
+        echo "Checking for adlist.dat in root:"
         ls -la adlist.dat || echo "adlist.dat not found in root"
 
     - name: Create Release
