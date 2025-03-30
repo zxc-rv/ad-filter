@@ -40,7 +40,7 @@
   }
 }
 ```
-> [!NOTE]
+> [!TIP]
 > При использовании XKeen на роутерах Keenetic можно скачать командой в entware:
 > ```
 > curl -L -o /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat
