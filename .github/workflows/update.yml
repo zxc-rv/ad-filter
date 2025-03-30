@@ -83,12 +83,16 @@ jobs:
         sing-box rule-set compile adlist.json
         echo "Проверяем размер adlist.srs :"
         ls -lh adlist.srs || echo "adlist.srs не создан!"
+
+    - name: Set release date
+      id: set-date
+      run: echo "RELEASE_DATE=$(date +%d-%m-%Y)" >> $GITHUB_ENV
         
     - name: Создаем релиз
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: "daily-update-$(date +%d-%m-%Y)"
-        name: "Ежедневное обновление $(date +%d-%m-%Y)"
+        tag_name: "daily-update-${{ env.RELEASE_DATE }}"
+        name: "Ежедневное обновление ${{ env.RELEASE_DATE }}"
         files: |
           adlist.dat
           adlist.srs
