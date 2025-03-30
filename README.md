@@ -39,9 +39,13 @@
 }
 ```
 > [!NOTE]
-> При использовании XKeen на роутерах Keenetic можно добавить автоматизацию Cron:
+> При использовании XKeen на роутерах Keenetic можно скачать командой в entware:
 > ```
-> echo "3 5 * * * /opt/bin/curl -L -o /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat" >> /opt/var/spool/cron/crontabs/root
+> /opt/bin/curl -L -o /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat
+> ```
+> Также можно добавить автоматизацию Cron:
+> ```
+> echo "3 5 * * * /opt/bin/curl -L -o /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat && xkeen -restart" >> /opt/var/spool/cron/crontabs/root
 > ```
 
 ### Для Sing-box
