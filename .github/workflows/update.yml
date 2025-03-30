@@ -6,7 +6,7 @@ on:
   workflow_dispatch:     # Возможность запустить вручную
 
 jobs:
-  update-domains:
+  Update_lists:
     runs-on: ubuntu-latest
     
     steps:
