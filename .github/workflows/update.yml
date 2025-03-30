@@ -43,15 +43,6 @@ jobs:
         echo "Checking for adlist.dat:"
         ls -la adlist.dat || echo "adlist.dat not found in root"
 
-    - name: Commit changes
-      run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git add data/hagezi-pro
-        git add adlist.dat || echo "No adlist.dat to add"
-        git commit -m "Update hagezi-pro domains and adlist.dat" || echo "No changes to commit"
-        git push
-
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
