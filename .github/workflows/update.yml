@@ -21,11 +21,9 @@ jobs:
         echo "Скачиваем актуальный список Hagezi Pro..."
         curl -s https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp.txt
         echo "Чистим комментарии..."
-        grep -v '^#' temp.txt > temp_filtered.txt
-        echo "Добавляем префикс domain..."
-        sed 's/^/domain:/' temp_filtered.txt > data/hagezi-pro
+        grep -v '^#' temp.txt > data/hagezi-pro
         echo "Очистка..."
-        rm temp.txt temp_filtered.txt
+        rm temp.txt
         echo "hagezi-pro contents (first 5 lines):"
         head -n 5 data/hagezi-pro || echo "Файл не создан!"
 
