@@ -2,8 +2,8 @@ name: Обновить списки
 
 on:
   schedule:
-    - cron: '49 1 * * *'  # Запуск каждый день в полночь UTC
-  workflow_dispatch:     # Возможность запустить вручную
+    - cron: '55 1 * * *'
+  workflow_dispatch:
 
 jobs:
   Update_lists:
