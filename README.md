@@ -5,7 +5,7 @@
 ![image](https://github.com/user-attachments/assets/626c5ead-f456-4817-b0ae-21e8a8abef81)
 
 ## Особенности
-- **Ежедневные обновления**: Автоматически загружает и обрабатывает последние списки [Hagezi Pro](https://github.com/hagezi/dns-blocklists) каждый день в 4 часа по МСК.
+- **Ежедневные обновления**: Автоматически загружает и обрабатывает последние списки [Hagezi Pro](https://github.com/hagezi/dns-blocklists) каждый день.
 - **Два формата**:
   - `adlist.dat`: Список для Xray.
   - `adlist.srs`: Список для Sing-Box.
