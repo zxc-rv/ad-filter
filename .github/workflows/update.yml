@@ -2,7 +2,7 @@ name: Обновить списки
 
 on:
   schedule:
-    - cron: '0 1 * * *'
+    - cron: '20 2 * * *'
   workflow_dispatch:
 
 jobs:
