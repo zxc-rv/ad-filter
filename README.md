@@ -8,8 +8,8 @@
 ## Последние версии
 Скачивайте самые свежие списки в любое время:
 
-- 📦 https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat
-- 📦 https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.srs
+- 📦 https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat [Xray]
+- 📦 https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.srs [Sing-Box]
 
 ## Как это работает
 1. **Источник данных**: Загружаются домены из wildcard-списка Hagezi Pro.
