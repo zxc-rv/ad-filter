@@ -4,18 +4,12 @@
 
 ![image](https://github.com/user-attachments/assets/626c5ead-f456-4817-b0ae-21e8a8abef81)
 
-## Особенности
-- **Ежедневные обновления**: Автоматически загружает и обрабатывает последние списки [Hagezi Pro](https://github.com/hagezi/dns-blocklists) каждый день.
-- **Два формата**:
-  - `adlist.dat`: Список для Xray.
-  - `adlist.srs`: Список для Sing-Box.
-- **Простой доступ**: Статичные ссылки на последние файлы через GitHub Releases.
 
 ## Последние версии
 Скачивайте самые свежие списки в любое время:
 
-- 📦 [adlist.dat](https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat)  
-- 📦 [adlist.srs](https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.srs)
+- 📦 https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat
+- 📦 https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.srs
 
 ## Как это работает
 1. **Источник данных**: Загружаются домены из wildcard-списка Hagezi Pro.
