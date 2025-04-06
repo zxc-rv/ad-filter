@@ -8,8 +8,8 @@
 ## Последние версии
 Скачивайте самые свежие списки в любое время:
 
-- 📦 https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat [Xray]
-- 📦 https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.srs [Sing-Box]
+- 📦 [Xray] https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat
+- 📦 [Sing-Box] https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.srs
 
 ## Как это работает
 1. **Источник данных**: Загружаются домены из wildcard-списка [Hagezi Pro](https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt).
@@ -39,9 +39,9 @@
 > ```
 > curl -L -o /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat
 > ```
-> Также можно добавить автоматизацию Cron:
-> ```
-> echo "3 5 * * * /opt/bin/curl -L -o /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat && xkeen -restart" >> /opt/var/spool/cron/crontabs/root
+> Также можно добавить автоматизацию Cron (автообновление каждый день в 5 утра + перезагрузка XKeen):
+> ``` 
+> echo "0 5 * * * /opt/bin/curl -L -o /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat && xkeen -restart" >> /opt/var/spool/cron/crontabs/root
 > ```
 
 ### Для Sing-Box (с версии 1.11.0)
