@@ -84,7 +84,7 @@ jobs:
 
     - name: Ставим дату релиза
       id: set-date
-      run: echo "RELEASE_DATE=$(date +%Y.%m.%d)" >> $GITHUB_ENV
+      run: echo "RELEASE_DATE=$(date +%d.%m.%Y)" >> $GITHUB_ENV
 
     - name: Создаем релиз
       uses: softprops/action-gh-release@v2
