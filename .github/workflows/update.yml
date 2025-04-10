@@ -108,7 +108,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Удаляем старые запуски этого workflow
-      uses: actions/delete-workflow-runs@v2
+      uses: actions/delete-workflow-runs@v1
       with:
         token: ${{ secrets.GITHUB_TOKEN }} 
         repository: ${{ github.repository }} 
