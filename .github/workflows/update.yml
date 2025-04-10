@@ -114,6 +114,6 @@ jobs:
         repository: ${{ github.repository }}
         delete_workflow_pattern: update.yml
         retain_days: 7
-        keep_minimum_runs: 6
+        keep_minimum_runs: 0
         dry_run: true
 
