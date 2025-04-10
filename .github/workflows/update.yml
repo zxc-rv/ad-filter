@@ -89,7 +89,7 @@ jobs:
     - name: Создаем релиз
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: "daily-update-${{ env.RELEASE_DATE }}"
+        tag_name: "daily-release-${{ env.RELEASE_DATE }}"
         name: "Ежедневный выпуск ${{ env.RELEASE_DATE }}"
         files: |
           adlist.dat
