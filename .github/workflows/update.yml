@@ -90,7 +90,7 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         tag_name: "daily-update-${{ env.RELEASE_DATE }}"
-        name: "Ежедневый выпуск ${{ env.RELEASE_DATE }}"
+        name: "Ежедневный выпуск ${{ env.RELEASE_DATE }}"
         files: |
           adlist.dat
           adlist.srs
