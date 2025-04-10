@@ -1,4 +1,4 @@
-name: Обновить списки
+name: Обновление списков
 
 on:
   schedule:
@@ -113,7 +113,6 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }} 
         repository: ${{ github.repository }}
         delete_workflow_pattern: update.yml
-        retain_days: 3
-        keep_minimum_runs: 2
-        dry_run: true
+        retain_days: 7
+        keep_minimum_runs: 7
 
