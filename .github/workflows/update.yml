@@ -19,7 +19,7 @@ jobs:
       run: |
         mkdir -p data
         echo "Скачиваем актуальный список Hagezi Pro..."
-        curl -s https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp.txt
+        curl -sSLf https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp.txt
         echo "Чистим комментарии..."
         grep -v '^#' temp.txt > data/hagezi-pro
         echo "Очистка..."
@@ -30,7 +30,7 @@ jobs:
     - name: Скачиваем и обрататываем список доменов для adlist.json
       run: |
         echo "Скачиваем список для adlist.json..."
-        curl -s https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp_domains.txt
+        curl -sSLf https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp_domains.txt
         echo "Чистим комментарии..."
         grep -v '^#' temp_domains.txt > filtered_domains.txt
         echo "Проверяем отфильтрованные домены:"
@@ -84,10 +84,10 @@ jobs:
 
     - name: Ставим дату релиза
       id: set-date
-      run: echo "RELEASE_DATE=$(date +%d-%m-%Y)" >> $GITHUB_ENV
-        
+      run: echo "RELEASE_DATE=$(date +%Y-%m-%d)" >> $GITHUB_ENV
+
     - name: Создаем релиз
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         tag_name: "daily-update-${{ env.RELEASE_DATE }}"
         name: "Ежедневное обновление ${{ env.RELEASE_DATE }}"
@@ -96,5 +96,13 @@ jobs:
           adlist.srs
         draft: false
         prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Удаляем старые релизы
+      uses: dev-drprasad/delete-older-releases@v0.3.4
+      with:
+        keep_latest: 7
+        delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
