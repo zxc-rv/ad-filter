@@ -106,3 +106,12 @@ jobs:
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Удаляем старые запуски этого workflow
+      uses: actions/delete-workflow-runs@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }} 
+        repository: ${{ github.repository }} 
+        retain_days: 7
+        keep_minimum_runs: 7
+
