@@ -113,7 +113,7 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }} 
         repository: ${{ github.repository }}
         delete_workflow_pattern: update.yml
-        retain_days: 6
+        retain_days: 1
         keep_minimum_runs: 7
         dry_run: true
 
