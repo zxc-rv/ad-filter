@@ -107,8 +107,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
-    - name: Удаляем старые запуски этого workflow
-      uses: actions/delete-workflow-runs@v1
+    - name: Удаляем старые workflow runs
+      uses: Mattraks/delete-workflow-runs@v2
       with:
         token: ${{ secrets.GITHUB_TOKEN }} 
         repository: ${{ github.repository }} 
