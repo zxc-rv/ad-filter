@@ -2,112 +2,73 @@ name: Обновление списков
 
 on:
   schedule:
-    - cron: '25 1 * * *' # Запускается каждый день в 1:25 UTC
-  workflow_dispatch: # Позволяет запускать вручную
+    - cron: '25 1 * * *'
+  workflow_dispatch:
 
 jobs:
   Update_lists:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Чекаем основной репозиторий (где лежит этот workflow)
+    - name: Чекаем репо
       uses: actions/checkout@v4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Показываем содержимое текущей директории после основного чекаута
-      run: |
-        echo "Содержимое корневой директории воркфлоу:"
-        ls -la
-
-    # НОВЫЙ ШАГ: Скачиваем ignore.list из репозитория zxc-rv/ad-filter
-    - name: Скачиваем ignore.list из репозитория zxc-rv/ad-filter
-      run: |
-        echo "Скачиваем ignore.list с https://raw.githubusercontent.com/zxc-rv/ad-filter/main/ignore.list"
-        curl -sSLf https://raw.githubusercontent.com/zxc-rv/ad-filter/main/ignore.list -o ignore_list_external.txt
-        if [[ $? -ne 0 ]]; then
-          echo "Ошибка! Не удалось скачать ignore_list_external.txt. Возможно, URL неверный или файл недоступен."
-          # Решаем, что делать дальше: можно создать пустой файл, чтобы скрипт не падал, или завершить с ошибкой
-          echo "Создаем пустой ignore_list_external.txt, чтобы избежать ошибок далее."
-          touch ignore_list_external.txt
-        else
-          echo "ignore_list_external.txt успешно скачан."
-        fi
-        echo "Содержимое скачанного ignore_list_external.txt (первые 10 строк):"
-        head -n 10 ignore_list_external.txt
-        echo "Размер ignore_list_external.txt: $(wc -c < ignore_list_external.txt) байт"
-
 
     - name: Скачиваем и обрабатываем список доменов для adlist.dat
       run: |
         mkdir -p data
         echo "Скачиваем актуальный список Hagezi Pro..."
         curl -sSLf https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp.txt
-        
-        echo "Чистим комментарии из Hagezi Pro..."
-        grep -v '^#' temp.txt > data/hagezi-pro-original
-        
-        # ИЗМЕНЕНО: Используем скачанный ignore_list_external.txt
-        echo "Проверяем наличие ignore_list_external.txt..."
-        if [[ -s "ignore_list_external.txt" ]]; then # Проверяем, что ignore_list_external.txt существует и не пустой
-          echo "Найден ignore_list_external.txt. Фильтруем hagezi-pro..."
-          grep -v -x -f ignore_list_external.txt data/hagezi-pro-original > data/hagezi-pro
-          echo "Количество строк до фильтрации в hagezi-pro-original: $(wc -l < data/hagezi-pro-original)"
-          echo "Количество строк после фильтрации в hagezi-pro: $(wc -l < data/hagezi-pro)"
+        echo "Чистим комментарии..."
+        grep -v '^#' temp.txt > temp_cleaned.txt
+        echo "Фильтруем игнор-лист..."
+        if [ -f ignore.list ]; then
+          grep -v -F -f ignore.list temp_cleaned.txt > data/hagezi-pro || echo "Ошибка фильтрации!"
         else
-          echo "Файл ignore_list_external.txt не найден, пуст или недоступен. Фильтрация hagezi-pro пропущена."
-          cp data/hagezi-pro-original data/hagezi-pro
+          mv temp_cleaned.txt data/hagezi-pro
+          echo "ignore.list не найден, пропускаем фильтрацию"
         fi
+        echo "Очистка..."
+        rm temp.txt temp_cleaned.txt
+        echo "hagezi-pro contents (first 5 lines):"
+        head -n 5 data/hagezi-pro || echo "Файл не создан!"
         
-        echo "Очистка временных файлов..."
-        rm temp.txt data/hagezi-pro-original
-        
-        echo "hagezi-pro contents (first 5 lines after potential filtering):"
-        head -n 5 data/hagezi-pro || echo "Файл data/hagezi-pro не создан или пуст!"
-
     - name: Скачиваем и обрабатываем список доменов для adlist.json
       run: |
         echo "Скачиваем список для adlist.json..."
         curl -sSLf https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp_domains.txt
-        
-        echo "Чистим комментарии из списка для adlist.json..."
-        grep -v '^#' temp_domains.txt > filtered_domains_original.txt
-        
-        # ИЗМЕНЕНО: Используем скачанный ignore_list_external.txt
-        echo "Проверяем наличие ignore_list_external.txt..."
-        if [[ -s "ignore_list_external.txt" ]]; then # Проверяем, что ignore_list_external.txt существует и не пустой
-          echo "Найден ignore_list_external.txt. Фильтруем список для adlist.json..."
-          grep -v -x -f ignore_list_external.txt filtered_domains_original.txt > filtered_domains.txt
-          echo "Количество строк до фильтрации в filtered_domains_original.txt: $(wc -l < filtered_domains_original.txt)"
-          echo "Количество строк после фильтрации в filtered_domains.txt: $(wc -l < filtered_domains.txt)"
+        echo "Чистим комментарии..."
+        grep -v '^#' temp_domains.txt > filtered_domains.txt
+        echo "Фильтруем игнор-лист..."
+        if [ -f ignore.list ]; then
+          grep -v -F -f ignore.list filtered_domains.txt > temp_filtered.txt && mv temp_filtered.txt filtered_domains.txt
+          echo "Фильтрация прошла!"
         else
-          echo "Файл ignore_list_external.txt не найден, пуст или недоступен. Фильтрация для adlist.json пропущена."
-          cp filtered_domains_original.txt filtered_domains.txt
+          echo "ignore.list не найден, пропускаем фильтрацию"
         fi
-        
-        echo "Проверяем отфильтрованные домены (filtered_domains.txt):"
-        head -n 5 filtered_domains.txt || echo "Нет отфильтрованных доменов в filtered_domains.txt!"
+        echo "Проверяем отфильтрованные домены:"
+        head -n 5 filtered_domains.txt || echo "Нет отфильтрованных доменов!"
         echo "Кол-во строк в filtered_domains.txt:"
         wc -l filtered_domains.txt
-        
         echo "Создаем adlist.json..."
-        jq -n --arg version "2" --argjson rules '[{"domain_suffix": []}]' \
-          '{version: $version | tonumber, rules: $rules}' > adlist.json
-
+        cat << EOF > adlist.json
+        {
+            "version": 2,
+            "rules": [
+                {
+                    "domain_suffix": []
+                }
+            ]
+        }
+        EOF
         echo "Добавляем домены в adlist.json..."
-        if [[ -s "filtered_domains.txt" ]]; then 
-            jq --slurpfile domains <(grep -vE "^\s*$" filtered_domains.txt | jq -R -s 'split("\n") | map(select(length > 0))') \
-              '.rules[0].domain_suffix = $domains[0]' adlist.json > temp_adlist.json && mv temp_adlist.json adlist.json
-        else
-            echo "Файл filtered_domains.txt пуст, в adlist.json не добавлены домены."
-        fi
-
-        echo "Очистка временных файлов..."
-        # ИЗМЕНЕНО: Добавляем удаление ignore_list_external.txt если он больше не нужен
-        rm temp_domains.txt filtered_domains_original.txt filtered_domains.txt ignore_list_external.txt
-        
+        jq --slurpfile domains <(jq -R -s -c 'split("\n") | map(select(length > 0))' filtered_domains.txt) \
+          '.rules[0].domain_suffix = $domains[0]' adlist.json > temp_adlist.json && mv temp_adlist.json adlist.json
+        echo "Очистка..."
+        rm temp_domains.txt filtered_domains.txt
         echo "adlist.json содержит (первые 1000 символов):"
-        head -c 1000 adlist.json || echo "adlist.json не создан или пуст!"
+        head -c 1000 adlist.json || echo "adlist.json не создан!"
 
     - name: Устанавливаем GO
       uses: actions/setup-go@v5
@@ -119,8 +80,7 @@ jobs:
 
     - name: Компилируем adlist.dat
       run: |
-        ls -la data/ 
-        go run ./ 
+        go run ./
         echo "Ищем adlist.dat в root:"
         ls -la adlist.dat || echo "adlist.dat не найден в root"
 
@@ -132,7 +92,7 @@ jobs:
     - name: Компилируем adlist.srs
       run: |
         echo "Компилируем adlist.json в adlist.srs..."
-        sing-box rule-set compile adlist.json 
+        sing-box rule-set compile adlist.json
         echo "Проверяем размер adlist.srs :"
         ls -lh adlist.srs || echo "adlist.srs не создан!"
 
@@ -166,6 +126,8 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }} 
         repository: ${{ github.repository }}
-        workflow_id: ${{ github.action_workflow_id || github.workflow_id || github.workflow }}
+        delete_workflow_pattern: update.yml
         retain_days: 7
         keep_minimum_runs: 0
+
+
