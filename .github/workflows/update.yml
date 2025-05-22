@@ -96,10 +96,10 @@ jobs:
         echo "Проверяем размер adlist.srs :"
         ls -lh adlist.srs || echo "adlist.srs не создан!"
 
-    - name: Скачиваем и обрабатываем список доменов для adlist.mrs
+    - name: Скачиваем и обрабатываем mihomo для adlist.mrs
       run: |
         echo "Получаем URL последнего релиза mihomo..."
-        MIHOMO_URL=$(curl -s https://api.github.com/repos/MetaCubeX/mihomo/releases/latest/download | jq -r '.assets[] | select(.name | contains("mihomo-linux-amd64-")) | .browser_download_url')
+        MIHOMO_URL=$(curl -s https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | jq -r '.assets[] | select(.name | contains("mihomo-linux-amd64-")) | .browser_download_url')
         echo "Скачиваем mihomo бинарник: $MIHOMO_URL..."
         curl -sSLf "$MIHOMO_URL" -o mihomo.gz
         echo "Распаковываем mihomo..."
