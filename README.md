@@ -69,4 +69,19 @@
 }
 ```
 
+### Для Mihomo
+Добавьте rule-set в конфигурацию Mihomo и правило для него:
+
+```yaml
+rule-providers:
+  adfilter:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.mrs
+    interval: 86400
+rules:
+  - RULE-SET,adfilter,REJECT
+```
+
 
