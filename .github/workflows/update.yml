@@ -114,8 +114,16 @@ jobs:
         curl -sSLf https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o pro-onlydomains.txt || { echo "Ошибка скачивания списка Hagezi!"; exit 1; }
         echo "Чистим комментарии..."
         grep -v '^#' pro-onlydomains.txt > temp_cleaned.txt || { echo "Ошибка очистки комментариев!"; exit 1; }
+        echo "Фильтруем игнор-лист..."
+        if [ -f ignore.list ]; then
+          grep -v -F -f ignore.list temp_cleaned.txt > filtered_domains.txt || { echo "Ошибка фильтрации игнор-листа!"; exit 1; }
+          echo "Фильтрация прошла!"
+        else
+          mv temp_cleaned.txt filtered_domains.txt
+          echo "ignore.list не найден, пропускаем фильтрацию"
+        fi
         echo "Добавляем '+.' в начало строк..."
-        sed 's/^/+./' temp_cleaned.txt > mihomo_domains.txt || { echo "Ошибка обработки списка!"; exit 1; }
+        sed 's/^/+./' filtered_domains.txt > mihomo_domains.txt || { echo "Ошибка обработки списка!"; exit 1; }
         echo "Проверяем первые 5 строк mihomo_domains.txt:"
         head -n 5 mihomo_domains.txt || echo "mihomo_domains.txt не создан!"
         echo "Компилируем adlist.mrs..."
@@ -123,7 +131,7 @@ jobs:
         echo "Проверяем размер adlist.mrs:"
         ls -lh adlist.mrs || echo "adlist.mrs не создан!"
         echo "Очистка..."
-        rm mihomo-bin mihomo_domains.txt pro-onlydomains.txt temp_cleaned.txt
+        rm mihomo-bin mihomo_domains.txt pro-onlydomains.txt temp_cleaned.txt filtered_domains.txt
 
     - name: Ставим дату релиза
       id: set-date
