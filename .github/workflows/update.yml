@@ -96,27 +96,32 @@ jobs:
         echo "Проверяем размер adlist.srs :"
         ls -lh adlist.srs || echo "adlist.srs не создан!"
 
-    - name: Скачиваем и обрабатываем mihomo для adlist.mrs
+    - name: Скачиваем и обрабатываем список доменов для adlist.mrs
       run: |
         echo "Получаем URL последнего релиза mihomo..."
-        MIHOMO_URL=$(curl -s https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | jq -r '.assets[] | select(.name | contains("mihomo-linux-amd64-")) | .browser_download_url')
+        MIHOMO_URL=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | jq -r '.assets[] | select(.name | test("mihomo-linux-amd64-v.*\\.gz$")) | .browser_download_url' || echo "Ошибка получения URL!")
+        if [ -z "$MIHOMO_URL" ]; then
+          echo "Ошибка: URL mihomo не получен! Выходим..."
+          exit 1
+        fi
         echo "Скачиваем mihomo бинарник: $MIHOMO_URL..."
-        curl -sSLf "$MIHOMO_URL" -o mihomo.gz
+        curl -sSLf "$MIHOMO_URL" -o mihomo.gz || { echo "Ошибка скачивания mihomo!"; exit 1; }
         echo "Распаковываем mihomo..."
-        gunzip mihomo.gz
-        chmod +x mihomo
+        gunzip mihomo.gz || { echo "Ошибка распаковки mihomo!"; exit 1; }
+        mv mihomo mihomo-bin || { echo "Ошибка переименования бинарника!"; exit 1; }
+        chmod +x mihomo-bin
         echo "Скачиваем список для adlist.mrs..."
-        curl -sSLf https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o pro-onlydomains.txt
+        curl -sSLf https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o pro-onlydomains.txt || { echo "Ошибка скачивания списка Hagezi!"; exit 1; }
         echo "Добавляем '+.' в начало строк..."
-        sed 's/^/+./' pro-onlydomains.txt > mihomo_domains.txt
+        sed 's/^/+./' pro-onlydomains.txt > mihomo_domains.txt || { echo "Ошибка обработки списка!"; exit 1; }
         echo "Проверяем первые 5 строк mihomo_domains.txt:"
         head -n 5 mihomo_domains.txt || echo "mihomo_domains.txt не создан!"
         echo "Компилируем adlist.mrs..."
-        ./mihomo convert-ruleset domain text mihomo_domains.txt adlist.mrs
+        ./mihomo-bin convert-ruleset domain text mihomo_domains.txt adlist.mrs || { echo "Ошибка компиляции adlist.mrs!"; exit 1; }
         echo "Проверяем размер adlist.mrs:"
         ls -lh adlist.mrs || echo "adlist.mrs не создан!"
         echo "Очистка..."
-        rm mihomo mihomo_domains.txt pro-onlydomains.txt
+        rm mihomo-bin mihomo_domains.txt pro-onlydomains.txt
 
     - name: Ставим дату релиза
       id: set-date
