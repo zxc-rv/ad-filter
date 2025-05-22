@@ -96,6 +96,28 @@ jobs:
         echo "Проверяем размер adlist.srs :"
         ls -lh adlist.srs || echo "adlist.srs не создан!"
 
+    - name: Скачиваем и обрабатываем список доменов для adlist.mrs
+      run: |
+        echo "Получаем URL последнего релиза mihomo..."
+        MIHOMO_URL=$(curl -s https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | jq -r '.assets[] | select(.name | contains("mihomo-linux-amd64-")) | .browser_download_url')
+        echo "Скачиваем mihomo бинарник: $MIHOMO_URL..."
+        curl -sSLf "$MIHOMO_URL" -o mihomo.gz
+        echo "Распаковываем mihomo..."
+        gunzip mihomo.gz
+        chmod +x mihomo
+        echo "Скачиваем список для adlist.mrs..."
+        curl -sSLf https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o pro-onlydomains.txt
+        echo "Добавляем '+.' в начало строк..."
+        sed 's/^/+./' pro-onlydomains.txt > mihomo_domains.txt
+        echo "Проверяем первые 5 строк mihomo_domains.txt:"
+        head -n 5 mihomo_domains.txt || echo "mihomo_domains.txt не создан!"
+        echo "Компилируем adlist.mrs..."
+        ./mihomo convert-ruleset domain text mihomo_domains.txt adlist.mrs
+        echo "Проверяем размер adlist.mrs:"
+        ls -lh adlist.mrs || echo "adlist.mrs не создан!"
+        echo "Очистка..."
+        rm mihomo mihomo_domains.txt pro-onlydomains.txt
+
     - name: Ставим дату релиза
       id: set-date
       run: echo "RELEASE_DATE=$(date +%d.%m.%Y)" >> $GITHUB_ENV
@@ -108,6 +130,7 @@ jobs:
         files: |
           adlist.dat
           adlist.srs
+          adlist.mrs
         draft: false
         prerelease: false
       env:
@@ -129,5 +152,3 @@ jobs:
         delete_workflow_pattern: update.yml
         retain_days: 7
         keep_minimum_runs: 0
-
-
