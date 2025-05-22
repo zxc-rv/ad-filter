@@ -8,9 +8,9 @@
 ## Последние версии
 Скачивайте самые свежие списки в любое время:
 
-- 📦 [Xray] https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat
+- 🩻 [Xray] https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat
 - 📦 [Sing-Box] https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.srs
-
+- 😼 [Mihomo] https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.mrs
 ## Как это работает
 1. **Источник данных**: Загружаются домены из wildcard-списка [Hagezi Pro](https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt).
 2. **Обработка**: Удаляются комментарии, форматируются данные и компилируются в нужные форматы.
