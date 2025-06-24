@@ -79,7 +79,7 @@ rule-providers:
     behavior: domain
     format: mrs
     url: https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.mrs
-    path: ./adlist.mrs
+    path: ./rule-providers/adlist.mrs
     interval: 86400
 rules:
   - RULE-SET,adfilter,REJECT
