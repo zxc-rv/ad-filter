@@ -99,7 +99,8 @@ jobs:
     - name: Скачиваем и обрабатываем список доменов для adlist.mrs
       run: |
         echo "Получаем URL последнего релиза mihomo..."
-        MIHOMO_URL=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | jq -r '.assets[] | select(.name | test("mihomo-linux-amd64-v.*\\.gz$")) | .browser_download_url' | head -n 1)        if [ -z "$MIHOMO_URL" ]; then
+        MIHOMO_URL=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | jq -r '.assets[] | select(.name | test("mihomo-linux-amd64-v.*\\.gz$")) | .browser_download_url' | head -n 1)
+        if [ -z "$MIHOMO_URL" ]; then
           echo "Ошибка: URL mihomo не получен! Выходим..."
           exit 1
         fi
