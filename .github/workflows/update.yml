@@ -108,8 +108,7 @@ jobs:
         curl -sSLf "$MIHOMO_URL" -o mihomo.gz || { echo "Ошибка скачивания mihomo!"; exit 1; }
         echo "Распаковываем mihomo..."
         gunzip mihomo.gz || { echo "Ошибка распаковки mihomo!"; exit 1; }
-        mv mihomo mihomo-bin || { echo "Ошибка переименования бинарника!"; exit 1; }
-        chmod +x mihomo-bin
+        chmod +x mihomo
         echo "Скачиваем список для adlist.mrs..."
         curl -sSLf https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o pro-onlydomains.txt || { echo "Ошибка скачивания списка Hagezi!"; exit 1; }
         echo "Чистим комментарии..."
@@ -127,11 +126,11 @@ jobs:
         echo "Проверяем первые 5 строк mihomo_domains.txt:"
         head -n 5 mihomo_domains.txt || echo "mihomo_domains.txt не создан!"
         echo "Компилируем adlist.mrs..."
-        ./mihomo-bin convert-ruleset domain text mihomo_domains.txt adlist.mrs || { echo "Ошибка компиляции adlist.mrs!"; exit 1; }
+        ./mihomo convert-ruleset domain text mihomo_domains.txt adlist.mrs || { echo "Ошибка компиляции adlist.mrs!"; exit 1; }
         echo "Проверяем размер adlist.mrs:"
         ls -lh adlist.mrs || echo "adlist.mrs не создан!"
         echo "Очистка..."
-        rm mihomo-bin mihomo_domains.txt pro-onlydomains.txt temp_cleaned.txt filtered_domains.txt
+        rm mihomo mihomo_domains.txt pro-onlydomains.txt temp_cleaned.txt filtered_domains.txt
 
     - name: Ставим дату релиза
       id: set-date
