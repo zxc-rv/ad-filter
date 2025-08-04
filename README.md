@@ -35,11 +35,11 @@
 }
 ```
 > [!TIP]
-> При использовании XKeen на роутерах Keenetic можно скачать командой в entware:
+> При использовании XKeen с Xray на роутерах Keenetic можно скачать командой в entware:
 > ```
 > curl -L -o /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat
 > ```
-> Также можно добавить автоматизацию Cron (автообновление каждый день в 5 утра + перезагрузка XKeen):
+> Автоматизацию Cron (автообновление каждый день в 5 утра + перезагрузка XKeen):
 > ``` 
 > echo "0 5 * * * /opt/bin/curl -L -o /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat && xkeen -restart" >> /opt/var/spool/cron/crontabs/root
 > ```
