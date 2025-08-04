@@ -39,7 +39,7 @@
 > ```
 > curl -L -o /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat
 > ```
-> Автоматизацию Cron (автообновление каждый день в 5 утра + перезагрузка XKeen):
+> Автоматизация Cron (автообновление ежедневно в 5 утра + перезагрузка XKeen):
 > ``` 
 > echo "0 5 * * * /opt/bin/curl -L -o /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat && xkeen -restart" >> /opt/var/spool/cron/crontabs/root
 > ```
