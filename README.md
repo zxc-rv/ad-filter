@@ -1,23 +1,23 @@
 # Ad-Filter 🚫✨
 
-Списки доменов с рекламой на базе Hagezi Pro для использования с клиентами на базе Xray, Sing-Box и Mihomo. Ежедневное обновление.
+Списки доменов с рекламой на базе Hagezi Pro для использования с клиентами на базе Xray, Sing-Box и Mihomo.
 
 ![image](https://github.com/user-attachments/assets/626c5ead-f456-4817-b0ae-21e8a8abef81)
 
 
-## Последние версии
+## Статичные ссылки
 Скачивайте самые свежие списки в любое время:
 
-- 🩻 [Xray] https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat
-- 📦 [Sing-Box] https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.srs
-- 😼 [Mihomo] https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.mrs
+- 🩻 Xray https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat
+- 📦 Sing-Box https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.srs
+- 😼 Mihomo https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.mrs
 ## Как это работает
-1. **Источник данных**: Загружаются домены из wildcard-списка [Hagezi Pro](https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt).
-2. **Обработка**: Удаляются комментарии, форматируются данные и компилируются в нужные форматы.
-3. **Автоматизация**: GitHub Actions запускается ежедневно для создания и публикации файлов.
-4. **Доставка**: Файлы публикуются как активы релиза GitHub для удобного доступа.
+1. Загружаются домены из wildcard-списка [Hagezi Pro](https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt).
+2. Удаляются комментарии, форматируются данные и компилируются в нужные форматы.
+3. GitHub Action запускается ежедневно для генерации свежих файлов из источника.
+4. Файлы публикуются как активы релиза GitHub для удобного доступа.
 
-## Примеры конфигураций:
+## Примеры конфигураций
 
 ### Для Xray (c версии 1.8.7)
 Загрузите `adlist.dat` в нужную директорию и добавьте правило для него:
@@ -50,12 +50,6 @@
 ```json
 {
   "route": {
-    "rules": [
-      {
-        "rule_set": "ads",
-        "action": "reject"
-      }
-    ],
     "rule_set": [
       {
         "tag": "ads",
@@ -63,6 +57,12 @@
         "format": "binary",
         "url": "https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.srs",
         "download_detour": "direct"
+      }
+    ],
+    "rules": [
+      {
+        "rule_set": "ads",
+        "action": "reject"
       }
     ]
   }
