@@ -37,11 +37,11 @@
 > [!TIP]
 > При использовании XKeen с Xray на роутерах Keenetic можно скачать командой в entware:
 > ```
-> curl -Lo /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat
+> curl -Lfo /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat
 > ```
 > Автоматизация Cron (автообновление ежедневно в 5 утра + перезагрузка XKeen):
 > ``` 
-> echo "0 5 * * * /opt/bin/curl -Lo /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat && xkeen -restart" >> /opt/var/spool/cron/crontabs/root
+> echo "0 5 * * * /opt/bin/curl -Lfo /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat && xkeen -restart" >> /opt/var/spool/cron/crontabs/root
 > ```
 
 ### Sing-Box (с версии 1.11.0)
