@@ -22,15 +22,20 @@ jobs:
         curl -sSLf https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp.txt
         echo "Чистим комментарии..."
         grep -v '^#' temp.txt > temp_cleaned.txt
-        echo "Фильтруем игнор-лист..."
-        if [ -f ignore.list ]; then
-          grep -v -F -f ignore.list temp_cleaned.txt > data/hagezi-pro || echo "Ошибка фильтрации!"
+        echo "Фильтруем exclude.list..."
+        if [ -f exclude.list ]; then
+          grep -v -F -f exclude.list temp_cleaned.txt > data/hagezi-pro || echo "Ошибка фильтрации!"
         else
           mv temp_cleaned.txt data/hagezi-pro
-          echo "ignore.list не найден, пропускаем фильтрацию"
+          echo "exclude.list не найден, пропускаем фильтрацию"
+        fi
+        if [ -f include.list ]; then
+          echo "Добавляем include.list..."
+          cat include.list >> data/hagezi-pro
+          sort -u data/hagezi-pro -o data/hagezi-pro
         fi
         echo "Очистка..."
-        rm temp.txt temp_cleaned.txt
+        rm -f temp.txt temp_cleaned.txt
         echo "hagezi-pro contents (first 5 lines):"
         head -n 5 data/hagezi-pro || echo "Файл не создан!"
         
@@ -40,12 +45,17 @@ jobs:
         curl -sSLf https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp_domains.txt
         echo "Чистим комментарии..."
         grep -v '^#' temp_domains.txt > filtered_domains.txt
-        echo "Фильтруем игнор-лист..."
-        if [ -f ignore.list ]; then
-          grep -v -F -f ignore.list filtered_domains.txt > temp_filtered.txt && mv temp_filtered.txt filtered_domains.txt
+        echo "Фильтруем exclude.list..."
+        if [ -f exclude.list ]; then
+          grep -v -F -f exclude.list filtered_domains.txt > temp_filtered.txt && mv temp_filtered.txt filtered_domains.txt
           echo "Фильтрация прошла!"
         else
-          echo "ignore.list не найден, пропускаем фильтрацию"
+          echo "exclude.list не найден, пропускаем фильтрацию"
+        fi
+        if [ -f include.list ]; then
+          echo "Добавляем include.list..."
+          cat include.list >> filtered_domains.txt
+          sort -u filtered_domains.txt -o filtered_domains.txt
         fi
         echo "Проверяем отфильтрованные домены:"
         head -n 5 filtered_domains.txt || echo "Нет отфильтрованных доменов!"
@@ -66,7 +76,7 @@ jobs:
         jq --slurpfile domains <(jq -R -s -c 'split("\n") | map(select(length > 0))' filtered_domains.txt) \
           '.rules[0].domain_suffix = $domains[0]' adlist.json > temp_adlist.json && mv temp_adlist.json adlist.json
         echo "Очистка..."
-        rm temp_domains.txt filtered_domains.txt
+        rm -f temp_domains.txt filtered_domains.txt
         echo "adlist.json содержит (первые 1000 символов):"
         head -c 1000 adlist.json || echo "adlist.json не создан!"
 
@@ -113,13 +123,18 @@ jobs:
         curl -sSLf https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o pro-onlydomains.txt || { echo "Ошибка скачивания списка Hagezi!"; exit 1; }
         echo "Чистим комментарии..."
         grep -v '^#' pro-onlydomains.txt > temp_cleaned.txt || { echo "Ошибка очистки комментариев!"; exit 1; }
-        echo "Фильтруем игнор-лист..."
-        if [ -f ignore.list ]; then
-          grep -v -F -f ignore.list temp_cleaned.txt > filtered_domains.txt || { echo "Ошибка фильтрации игнор-листа!"; exit 1; }
+        echo "Фильтруем exclude.list..."
+        if [ -f exclude.list ]; then
+          grep -v -F -f exclude.list temp_cleaned.txt > filtered_domains.txt || { echo "Ошибка фильтрации exclude.list!"; exit 1; }
           echo "Фильтрация прошла!"
         else
           mv temp_cleaned.txt filtered_domains.txt
-          echo "ignore.list не найден, пропускаем фильтрацию"
+          echo "exclude.list не найден, пропускаем фильтрацию"
+        fi
+        if [ -f include.list ]; then
+          echo "Добавляем include.list..."
+          cat include.list >> filtered_domains.txt
+          sort -u filtered_domains.txt -o filtered_domains.txt
         fi
         echo "Добавляем '+.' в начало строк..."
         sed 's/^/+./' filtered_domains.txt > mihomo_domains.txt || { echo "Ошибка обработки списка!"; exit 1; }
@@ -130,7 +145,7 @@ jobs:
         echo "Проверяем размер adlist.mrs:"
         ls -lh adlist.mrs || echo "adlist.mrs не создан!"
         echo "Очистка..."
-        rm mihomo mihomo_domains.txt pro-onlydomains.txt temp_cleaned.txt filtered_domains.txt
+        rm -f mihomo mihomo_domains.txt pro-onlydomains.txt temp_cleaned.txt filtered_domains.txt
 
     - name: Ставим дату релиза
       id: set-date
