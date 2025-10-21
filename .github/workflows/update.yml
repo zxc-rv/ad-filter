@@ -19,12 +19,12 @@ jobs:
       run: |
         mkdir -p data
         echo "Скачиваем актуальный список Hagezi Pro..."
-        curl -sSLf https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp.txt
+        curl -LsO https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt
         echo "Чистим комментарии..."
-        grep -v '^#' temp.txt > temp_cleaned.txt
+        grep -v '^#' pro-onlydomains.txt > temp_cleaned.txt
         echo "Фильтруем exclude.list..."
         if [ -f exclude.list ]; then
-          grep -v -F -f exclude.list temp_cleaned.txt > data/hagezi-pro || echo "Ошибка фильтрации!"
+          grep -vFf exclude.list temp_cleaned.txt > data/hagezi-pro || echo "Ошибка фильтрации!"
         else
           mv temp_cleaned.txt data/hagezi-pro
           echo "exclude.list не найден, пропускаем фильтрацию"
@@ -32,22 +32,22 @@ jobs:
         if [ -f include.list ]; then
           echo "Добавляем include.list..."
           cat include.list >> data/hagezi-pro
-          sort -u data/hagezi-pro -o data/hagezi-pro
+          sort -uo data/hagezi-pro data/hagezi-pro
         fi
         echo "Очистка..."
-        rm -f temp.txt temp_cleaned.txt
+        rm -f pro-onlydomains.txt temp_cleaned.txt
         echo "hagezi-pro contents (first 5 lines):"
-        head -n 5 data/hagezi-pro || echo "Файл не создан!"
+        head -n5 data/hagezi-pro || echo "Файл не создан!"
         
     - name: Скачиваем и обрабатываем список доменов для adlist.json
       run: |
         echo "Скачиваем список для adlist.json..."
-        curl -sSLf https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o temp_domains.txt
+        curl -LsO https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt
         echo "Чистим комментарии..."
-        grep -v '^#' temp_domains.txt > filtered_domains.txt
+        grep -v '^#' pro-onlydomains.txt > filtered_domains.txt
         echo "Фильтруем exclude.list..."
         if [ -f exclude.list ]; then
-          grep -v -F -f exclude.list filtered_domains.txt > temp_filtered.txt && mv temp_filtered.txt filtered_domains.txt
+          grep -vFf exclude.list filtered_domains.txt > temp_filtered.txt && mv temp_filtered.txt filtered_domains.txt
           echo "Фильтрация прошла!"
         else
           echo "exclude.list не найден, пропускаем фильтрацию"
@@ -55,7 +55,7 @@ jobs:
         if [ -f include.list ]; then
           echo "Добавляем include.list..."
           cat include.list >> filtered_domains.txt
-          sort -u filtered_domains.txt -o filtered_domains.txt
+          sort -uo filtered_domains.txt filtered_domains.txt
         fi
         echo "Проверяем отфильтрованные домены:"
         head -n 5 filtered_domains.txt || echo "Нет отфильтрованных доменов!"
@@ -73,10 +73,10 @@ jobs:
         }
         EOF
         echo "Добавляем домены в adlist.json..."
-        jq --slurpfile domains <(jq -R -s -c 'split("\n") | map(select(length > 0))' filtered_domains.txt) \
+        jq --slurpfile domains <(jq -Rsc 'split("\n") | map(select(length > 0))' filtered_domains.txt) \
           '.rules[0].domain_suffix = $domains[0]' adlist.json > temp_adlist.json && mv temp_adlist.json adlist.json
         echo "Очистка..."
-        rm -f temp_domains.txt filtered_domains.txt
+        rm -f pro-onlydomains.txt filtered_domains.txt
         echo "adlist.json содержит (первые 1000 символов):"
         head -c 1000 adlist.json || echo "adlist.json не создан!"
 
@@ -97,7 +97,7 @@ jobs:
     - name: Устанавливаем Sing-Box
       run: |
         echo "Установка Sing-Box..."
-        bash <(curl -fsSL https://sing-box.app/deb-install.sh)
+        bash <(curl -Ls https://sing-box.app/deb-install.sh)
         
     - name: Компилируем adlist.srs
       run: |
@@ -109,7 +109,7 @@ jobs:
     - name: Скачиваем и обрабатываем список доменов для adlist.mrs
       run: |
         echo "Получаем URL последнего релиза mihomo..."
-        MIHOMO_URL=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | jq -r '.assets[] | select(.name | test("mihomo-linux-amd64-v.*\\.gz$")) | .browser_download_url' | head -n 1)
+        MIHOMO_URL=$(curl -Ls https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | jq -r '.assets[] | select(.name | test("mihomo-linux-amd64-v3-v.*\\.gz$")) | .browser_download_url')
         if [ -z "$MIHOMO_URL" ]; then
           echo "Ошибка: URL mihomo не получен! Выходим..."
           exit 1
@@ -120,12 +120,12 @@ jobs:
         gunzip mihomo.gz || { echo "Ошибка распаковки mihomo!"; exit 1; }
         chmod +x mihomo
         echo "Скачиваем список для adlist.mrs..."
-        curl -sSLf https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt -o pro-onlydomains.txt || { echo "Ошибка скачивания списка Hagezi!"; exit 1; }
+        curl -LsO https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt || { echo "Ошибка скачивания списка Hagezi!"; exit 1; }
         echo "Чистим комментарии..."
         grep -v '^#' pro-onlydomains.txt > temp_cleaned.txt || { echo "Ошибка очистки комментариев!"; exit 1; }
         echo "Фильтруем exclude.list..."
         if [ -f exclude.list ]; then
-          grep -v -F -f exclude.list temp_cleaned.txt > filtered_domains.txt || { echo "Ошибка фильтрации exclude.list!"; exit 1; }
+          grep -vFf exclude.list temp_cleaned.txt > filtered_domains.txt || { echo "Ошибка фильтрации exclude.list!"; exit 1; }
           echo "Фильтрация прошла!"
         else
           mv temp_cleaned.txt filtered_domains.txt
@@ -134,12 +134,12 @@ jobs:
         if [ -f include.list ]; then
           echo "Добавляем include.list..."
           cat include.list >> filtered_domains.txt
-          sort -u filtered_domains.txt -o filtered_domains.txt
+          sort -uo filtered_domains.txt filtered_domains.txt
         fi
         echo "Добавляем '+.' в начало строк..."
         sed 's/^/+./' filtered_domains.txt > mihomo_domains.txt || { echo "Ошибка обработки списка!"; exit 1; }
         echo "Проверяем первые 5 строк mihomo_domains.txt:"
-        head -n 5 mihomo_domains.txt || echo "mihomo_domains.txt не создан!"
+        head -n5 mihomo_domains.txt || echo "mihomo_domains.txt не создан!"
         echo "Компилируем adlist.mrs..."
         ./mihomo convert-ruleset domain text mihomo_domains.txt adlist.mrs || { echo "Ошибка компиляции adlist.mrs!"; exit 1; }
         echo "Проверяем размер adlist.mrs:"
