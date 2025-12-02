@@ -19,7 +19,7 @@
 
 ## Примеры конфигураций
 
-### Xray (c версии 1.8.7)
+### Xray
 Загрузите `adlist.dat` в нужную директорию и добавьте правило для него:
 
 ```json
@@ -40,7 +40,7 @@
 > curl -Lfo /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat
 > ```
 
-### Sing-Box (с версии 1.11.0)
+### Sing-Box
 Добавьте rule_set в конфигурацию Sing-Box и правило для него:
 
 ```json
