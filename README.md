@@ -39,10 +39,6 @@
 > ```
 > curl -Lfo /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat
 > ```
-> Автоматизация Cron (автообновление ежедневно в 5 утра + перезагрузка XKeen):
-> ``` 
-> echo "0 5 * * * /opt/bin/curl -Lfo /opt/etc/xray/dat/adlist.dat https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.dat && xkeen -restart" >> /opt/var/spool/cron/crontabs/root
-> ```
 
 ### Sing-Box (с версии 1.11.0)
 Добавьте rule_set в конфигурацию Sing-Box и правило для него:
@@ -52,16 +48,15 @@
   "route": {
     "rule_set": [
       {
-        "tag": "ads",
+        "tag": "adlist",
         "type": "remote",
         "format": "binary",
-        "url": "https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.srs",
-        "download_detour": "direct"
+        "url": "https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.srs"
       }
     ],
     "rules": [
       {
-        "rule_set": "ads",
+        "rule_set": "adlist",
         "action": "reject"
       }
     ]
@@ -74,15 +69,15 @@
 
 ```yaml
 rule-providers:
-  adfilter:
+  adlist:
     type: http
-    behavior: domain
     format: mrs
+    behavior: domain
     url: https://github.com/zxc-rv/ad-filter/releases/latest/download/adlist.mrs
     path: ./rule-providers/adlist.mrs
     interval: 86400
 rules:
-  - RULE-SET,adfilter,REJECT
+  - RULE-SET,adlist,REJECT
 ```
 
 
