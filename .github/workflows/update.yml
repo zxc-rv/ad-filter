@@ -4,6 +4,8 @@ on:
   schedule:
     - cron: '25 1 * * *'
   workflow_dispatch:
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   Update_lists:
@@ -11,7 +13,7 @@ jobs:
     
     steps:
     - name: Чекаем репо
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -81,7 +83,7 @@ jobs:
         head -c 1000 adlist.json || echo "adlist.json не создан!"
 
     - name: Устанавливаем GO
-      uses: actions/setup-go@v5
+      uses: actions/setup-go@v6
       with:
         go-version: 'stable'
 
