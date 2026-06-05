@@ -21,7 +21,7 @@ jobs:
       run: |
         mkdir -p data
         echo "Скачиваем актуальный список Hagezi Pro..."
-        curl -LsO https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt
+        curl -LsO https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/pro-onlydomains.txt
         echo "Чистим комментарии..."
         grep -v '^#' pro-onlydomains.txt > temp_cleaned.txt
         echo "Фильтруем exclude.list..."
