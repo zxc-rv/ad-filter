@@ -44,7 +44,7 @@ jobs:
     - name: Скачиваем и обрабатываем список доменов для adlist.json
       run: |
         echo "Скачиваем список для adlist.json..."
-        curl -LsO https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt
+        curl -LsO https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/pro-onlydomains.txt
         echo "Чистим комментарии..."
         grep -v '^#' pro-onlydomains.txt > filtered_domains.txt
         echo "Фильтруем exclude.list..."
@@ -122,7 +122,7 @@ jobs:
         gunzip mihomo.gz || { echo "Ошибка распаковки mihomo!"; exit 1; }
         chmod +x mihomo
         echo "Скачиваем список для adlist.mrs..."
-        curl -LsO https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt || { echo "Ошибка скачивания списка Hagezi!"; exit 1; }
+        curl -LsO https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/pro-onlydomains.txt || { echo "Ошибка скачивания списка Hagezi!"; exit 1; }
         echo "Чистим комментарии..."
         grep -v '^#' pro-onlydomains.txt > temp_cleaned.txt || { echo "Ошибка очистки комментариев!"; exit 1; }
         echo "Фильтруем exclude.list..."
